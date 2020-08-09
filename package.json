@@ -1,7 +1,7 @@
 {
   "name": "serverless-graphql-nestjs",
   "version": "0.0.1",
-  "description": "Basic boilerplate for a serverless-graphql-nestjs application",
+  "description": "Basic boilerplate for a serverless-graphql-nestjs application (Schema First)",
   "author": "Matheus Alvarenga",
   "private": true,
   "license": "UNLICENSED",
