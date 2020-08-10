@@ -1,0 +1,38 @@
+service: sls-gql-njs
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${self:custom.region}
+  environment:
+    STAGE: ${self:provider.stage}
+plugins:
+  - serverless-offline
+custom:
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+package:
+  exclude:
+    - .git/**
+    - src/**
+    - test/**
+    - e2e/**
+    - README.md
+    - .eslintrc.js
+    - .prettierrc.js
+    - nest-cli.json
+    - package-lock.json
+    - package.json
+    - tsconfig.json
+    - .github
+    - .vscode
+  excludeDevDependencies: true
+
+functions:
+  index:
+    handler: dist/index.handler
+    events:
+      - http:
+          cors: true
+          path: '{proxy+}'
+          method: any

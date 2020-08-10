@@ -13,6 +13,9 @@ import { BooksModule } from './books/books.module';
       resolverValidationOptions: {
         requireResolversForResolveType: false,
       },
+      playground: {
+        endpoint: process.env.STAGE === 'dev' ? '/dev/graphql' : 'graphql',
+      },
     }),
     BooksModule,
   ],
