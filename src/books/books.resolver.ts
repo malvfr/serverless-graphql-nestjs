@@ -1,12 +1,7 @@
-import { Resolver, Mutation } from '@nestjs/graphql';
-import { Args, ResolveField, Parent, Query } from '@nestjs/graphql';
+import { Args, Query, Resolver, Mutation } from '@nestjs/graphql';
+import { Book } from './books.model';
 
-interface Book {
-  id: number;
-  title: string;
-}
-
-@Resolver('Author')
+@Resolver('Book')
 export class BooksResolver {
   private books: Book[] = [
     {
@@ -23,17 +18,17 @@ export class BooksResolver {
     },
   ];
 
-  @Query('books')
+  @Query(returns => [Book])
   findAllBooks(): Book[] {
     return this.books;
   }
 
-  @Query('findBook')
+  @Query(returns => Book)
   findBook(@Args('id') id: number): Book {
     return this.books.find(book => book.id === id);
   }
 
-  @Mutation()
+  @Mutation(returns => Book)
   createBook(@Args('title') title: string): Book {
     const newBook = { id: this.books.length, title };
     [...this.books, newBook];

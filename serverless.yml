@@ -12,6 +12,7 @@ custom:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
 package:
+  excludeDevDependencies: true
   exclude:
     - .git/**
     - src/**
@@ -26,7 +27,6 @@ package:
     - tsconfig.json
     - .github
     - .vscode
-  excludeDevDependencies: true
 
 functions:
   index:
@@ -36,3 +36,75 @@ functions:
           cors: true
           path: '{proxy+}'
           method: any
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${self:custom.stage}-${self:service}
+    ApiGatewayAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: cognito-authorizer
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Type: COGNITO_USER_POOLS
+        ProviderARNs:
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:cognito-idp:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':userpool/',
+                    Ref: CognitoUserPool,
+                  ],
+                ],
+            }
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        # Password policy
+        Policies:
+          PasswordPolicy:
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireUppercase: true
+            RequireSymbols: false
+            MinimumLength: 10
+        # Generate a name based on the stage
+        UserPoolName: ${self:service}-${self:custom.stage}-user-pool
+        # Set email as an alias
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        # Generate an app client name based on the stage
+        ClientName: ${self:service}-${self:custom.stage}-user-pool-client
+        UserPoolId:
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+        GenerateSecret: false
+
+# Print out the Id of the User Pool that is created
+Outputs:
+  UserPoolId:
+    Value:
+      Ref: CognitoUserPool
+
+  UserPoolClientId:
+    Value:
+      Ref: CognitoUserPoolClient
