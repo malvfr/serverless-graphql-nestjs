@@ -2,26 +2,14 @@
 
 ## Description
 
-Simple boilerplate for Serverless GraphQl NestJS (Schema first)
+_Basic boilerplate for a Serverless (Cognito Authorizer) NestJs and GraphQL application (Code First)_
 
-## Installation
+This is a minimal template for a serverless app. You will also find an example for using Cognito as authorizer for your endpoints.
 
-```bash
-$ npm install
-```
+## Usage
 
-## Running the app
+You can use the app as a traditional NestJS App, no need for configuration. Just clone the repo and modify the parts you wish.
 
-```bash
-# development
-$ npm run start
+## GraphQL Playground
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-
-# you can use serverless to start the server
-$ sls:start
-```
+If you are using the devolpment stage, you will find the playground at: **/dev/graphql**
