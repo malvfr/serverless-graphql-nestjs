@@ -34,4 +34,11 @@ export class BooksResolver {
     [...this.books, newBook];
     return newBook;
   }
+
+  @Mutation(returns => Book)
+  deleteBook(@Args('id') id: number): Book {
+    const deletedBook = this.books.find(book => book.id === id);
+    this.books = this.books.filter(book => book.id !== id);
+    return deletedBook;
+  }
 }
